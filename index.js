@@ -1,16 +1,28 @@
 require("dotenv").config();
 const express = require("express");
-require("./db");
 const cors = require("cors");
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-const port = process.env.PORT || 1111;
+const PORT = process.env.PORT || 1111;
+
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.DB_CONNECTION);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.log(error);
+    process.exit(1);
+  }
+};
+
 const studentRoutes = require("./routes/student");
 app.use(studentRoutes);
 
 //Connecting to server
-app.listen(port, () => {
-  console.log(`Server is Running at http://localhost:${port}`);
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server is Running at http://localhost:${PORT}`);
+  });
 });
